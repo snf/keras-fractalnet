@@ -11,8 +11,8 @@ from keras.engine import Layer
 from keras.utils.visualize_util import plot
 from keras import backend as K
 from theano import tensor as T
-#from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
-from theano.tensor.shared_randomstreams import RandomStreams
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
+#from theano.tensor.shared_randomstreams import RandomStreams
 
 class JoinLayer(Layer):
     def __init__(self, drop_p, **kwargs):
@@ -28,9 +28,9 @@ class JoinLayer(Layer):
         return K.random_binomial((count,), p=p)
 
     def arr_with_one(self, count):
-        pvals = [1.0/count for _ in range(count)]
+        pvals = [[1.0/count for _ in range(count)]]
         rng = RandomStreams()
-        arr = rng.multinomial(n=1, pvals=pvals)
+        arr = rng.multinomial(n=1, pvals=pvals)[0]
         return arr
 
     def _gen_drops(self, count, p):
