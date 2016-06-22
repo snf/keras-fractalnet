@@ -54,7 +54,7 @@ def build_network():
     output = Activation('softmax')(output)
     model = Model(input=input, output=output)
     optimizer = SGD(lr=LEARN_START, momentum=MOMENTUM)
-    model.compile(optimizer=optimizer, loss='categorical_crossentropy')
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     plot(model, to_file='model.png')
     return model
 
@@ -67,8 +67,7 @@ def train_network(net):
     net.fit(
         x=X_train, y=Y_train, batch_size=BATCH_SIZE,
         nb_epoch=NB_EPOCHS, validation_data=(X_test, Y_test),
-        callbacks=[learn, snapshot],
-        metrics=['accuracy']
+        callbacks=[learn, snapshot]
     )
 
 net = build_network()
