@@ -28,14 +28,9 @@ class JoinLayer(Layer):
         return K.random_binomial((count,), p=p)
 
     def arr_with_one(self, count):
-        # XXX_ There has to be a simpler way to build an array
-        # with one of the items set to 1 instead of this..
-        arr = [0 for _ in range(count)]
-        arr[0] = 1
-        arr = K.variable(arr)
+        pvals = [1.0/count for _ in range(count)]
         rng = RandomStreams()
-        active = rng.random_integers(low=0, high=count-1)
-        arr = T.roll(arr, active)
+        arr = rng.multinomial(n=1, pvals=pvals)
         return arr
 
     def _gen_drops(self, count, p):
