@@ -30,7 +30,7 @@ class JoinLayer(Layer):
     def arr_with_one(self, count):
         pvals = [[1.0/count for _ in range(count)]]
         rng = RandomStreams()
-        arr = rng.multinomial(n=1, pvals=pvals)[0]
+        arr = rng.multinomial(n=1, pvals=pvals, dtype='float32')[0]
         return arr
 
     def _gen_drops(self, count, p):
