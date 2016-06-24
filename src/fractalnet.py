@@ -3,7 +3,7 @@ import numpy as np
 from keras.layers import (
     Input,
     BatchNormalization,
-    Activation, Dense, Merge,
+    Activation, Dense, Dropout, Merge,
     Convolution2D, MaxPooling2D, ZeroPadding2D
 )
 from keras.models import Model
@@ -93,6 +93,8 @@ def fractal_conv(prev, filter, dropout=None):
     conv = Convolution2D(filter, 3, 3, init='glorot_normal')(conv)
     conv = BatchNormalization()(conv)
     conv = Activation('relu')(conv)
+    if dropout:
+        conv = Dropout(dropout)(conv)
     return conv
 
 def fractal_merge(prev, drop_p):
@@ -152,10 +154,11 @@ def fractal_iter(z, b, c, conv, drop_path, dropout=None):
     input = z
     for i in range(b):
         filter = conv[i]
+        dropout_i = dropout[i] if dropout else None
         input = fractal_block_iter(z=input, c=c,
                                    filter=filter,
                                    drop_p=drop_path,
-                                   dropout=dropout)
+                                   dropout=dropout_i)
         input = MaxPooling2D()(input)
     return input
 
