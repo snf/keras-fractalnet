@@ -89,8 +89,7 @@ class JoinLayer(Layer):
 def fractal_conv(prev, filter, dropout=None):
     print prev
     conv = prev
-    conv = ZeroPadding2D((1,1))(conv)
-    conv = Convolution2D(filter, 3, 3, init='glorot_normal')(conv)
+    conv = Convolution2D(filter, 3, 3, init='glorot_normal', border_mode='same')(conv)
     conv = BatchNormalization()(conv)
     conv = Activation('relu')(conv)
     if dropout:
