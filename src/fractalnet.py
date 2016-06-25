@@ -52,23 +52,6 @@ class JoinLayer(Layer):
         ave /= drops.sum()
         return ave
 
-    def drop_path(self, inputs):
-        drops = []
-        # Drop
-        for i in range(len(inputs)):
-            if np.random.rand() < self.p:
-                drops.append(i)
-        # Be sure there is at least one alive
-        if len(drops) == 0:
-            alive = np.random.randint(0, len(inputs))
-            drops.append(alive)
-        # Now average
-        ave = inputs[drops[0]]
-        for i in drops[1:]:
-            ave += inputs[i]
-        ave /= len(drops)
-        return ave
-
     def ave(self, inputs):
         ave = inputs[0]
         for input in inputs[1:]:
