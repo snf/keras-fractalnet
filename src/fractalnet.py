@@ -85,36 +85,21 @@ def fractal_merge(prev, drop_p):
 
 def fractal_block_iter(z, c, filter, drop_p, dropout=None):
     columns = [[z] for _ in range(c)]
-    p_columns = []
     for row in range(2**(c-1)):
-        p_t_row = []
         t_row = []
         for col in range(c):
-            # print('row:', row, ', col:', col)
             prop = 2**(col)
             # Add blocks
             if (row+1) % prop == 0:
                 t_col = columns[col]
                 t_col.append(fractal_conv(t_col[-1], filter, dropout=dropout))
                 t_row.append(col)
-                p_t_row.append('x')
-            else:
-                p_t_row.append('o')
-        p_columns.append(p_t_row)
         # Merge (if needed)
         if len(t_row) > 1:
             merging = [columns[x][-1] for x in t_row]
             merged  = fractal_merge(merging, drop_p=drop_p)
             for i in t_row:
                 columns[i].append(merged)
-        p_convs = [e for e in p_t_row if e == 'x']
-        if len(p_convs) > 1:
-            p_merge_row = ['=' for i in range(len(p_convs))]
-            p_merge_row+= [' ' for i in range(len(p_t_row) - len(p_convs))]
-            p_columns.append(p_merge_row)
-
-    # for i in p_columns:
-    #     print(i)
     return columns[0][-1]
 
 def fc(z, c):
