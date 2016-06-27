@@ -36,7 +36,7 @@ class JoinLayer(Layer):
     def _gen_drops(self, count, p):
         arr = self.random_arr(count, p)
         drops = K.switch(
-            K.not_equal(arr.max(), 0),
+            K.not_equal(K.max(arr), 0),
             arr,
             self.arr_with_one(count)
         )
@@ -49,7 +49,7 @@ class JoinLayer(Layer):
         ave = K.variable(0)
         for i in range(0, count):
             ave += inputs[i] * drops[i]
-        ave /= drops.sum()
+        ave /= K.sum(drops)
         return ave
 
     def ave(self, inputs):
@@ -61,7 +61,7 @@ class JoinLayer(Layer):
 
     def call(self, inputs, mask=None):
         print("call")
-        print inputs[0].shape
+        print K.shape(inputs[0])
         output = K.in_train_phase(self._drop_path(inputs), self.ave(inputs))
         return output
 
