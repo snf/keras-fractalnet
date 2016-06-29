@@ -57,7 +57,13 @@ class JoinLayer(Layer):
         ave = K.variable(0)
         for i in range(0, count):
             ave += inputs[i] * drops[i]
-        ave /= K.sum(drops)
+        sum = K.sum(drops)
+        # Check that the sum is not 0 (global droppath can make it
+        # 0) to avoid divByZero
+        ave = K.switch(
+            K.not_equal(sum, 0.),
+            ave/sum,
+            0.)
         return ave
 
     def ave(self, inputs):
