@@ -78,28 +78,34 @@ class JoinLayer(Layer):
         return input_shape[0]
 
 class JoinLayerGen:
+    '''JoinLayerGen will initialize seeds for both the global dropout
+    switch and for the global droppout path.
+
+    These seeds will be used to create the random tensors that the
+    children layers will use to know if they should use global
+    droppout and which path to take in case it's choosen.
+    '''
     def __init__(self, width, global_p=0.5):
         self.global_p = global_p
         self.width = width
-        self.build()
+        self.switch_seed = np.random.randint(1, 10e6)
+        self.path_seed = np.random.randint(1, 10e6)
 
     def _build_global_path_arr(self):
         # The path the block will take when using global droppath
         pvals = np.array([[1.0/self.width for _ in range(self.width)]], dtype=np.float32)
-        self.columns = self.rng.multinomial(n=1, pvals=pvals, dtype='float32')[0]
+        rng = RandomStreams(seed=self.path_seed)
+        return rng.multinomial(n=1, pvals=pvals, dtype='float32')[0]
 
     def _build_global_switch(self):
-        # A shared random tensor that will signal if the batch should
+        # A random tensor that will signal if the batch should
         # use global or local droppath
-        self.is_global = K.equal(K.random_binomial((), p=self.global_p), 1.)
-
-    def build(self):
-        self.rng = RandomStreams()
-        self._build_global_path_arr()
-        self._build_global_switch()
+        return K.equal(K.random_binomial((), p=self.global_p, seed=self.switch_seed), 1.)
 
     def get_join_layer(self, drop_p):
-        return JoinLayer(drop_p=drop_p, is_global=self.is_global, global_path=self.columns)
+        global_switch = self._build_global_switch()
+        global_path = self._build_global_path_arr()
+        return JoinLayer(drop_p=drop_p, is_global=global_switch, global_path=global_path)
 
 def fractal_conv(prev, filter, dropout=None):
     print prev
