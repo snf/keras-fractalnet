@@ -10,9 +10,32 @@ from keras.models import Model
 from keras.engine import Layer
 from keras.utils.visualize_util import plot
 from keras import backend as K
-from theano import tensor as T
-from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
-#from theano.tensor.shared_randomstreams import RandomStreams
+
+if K._BACKEND == 'theano':
+    from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
+
+def theano_multinomial(n, pvals, seed):
+    rng = RandomStreams(seed)
+    return rng.multinomial(n=n, pvals=pvals, dtype='float32')
+
+def tensorflow_categorical(count, seed):
+    # XXX_ Appareantly categorical distribution will allow us to
+    # sample as we want but the version implementing it is not
+    # released yet.
+    raise Exception('Not implemented')
+
+# Returns a random array [x0, x1, ...xn] where one is 1 and the others
+# are 0. Ex: [0, 0, 1, 0].
+def one_one_in_array(count, seed=None):
+    if seed is None:
+        seed = np.random.randint(1, 10e6)
+    if K._BACKEND == 'theano':
+        pvals = np.array([[1. / count for _ in range(count)]], dtype='float32')
+        return theano_multinomial(n=1, pvals=pvals, seed=seed)[0]
+    elif K._BACKEND == 'tensorflow':
+        return tensorflow_categorical(count=count, seed=seed)
+    else:
+        raise Exception('Backend: {} not implemented'.format(K._BACKEND))
 
 class JoinLayer(Layer):
     def __init__(self, drop_p, is_global, global_path, **kwargs):
@@ -30,10 +53,7 @@ class JoinLayer(Layer):
         return K.random_binomial((count,), p=p)
 
     def arr_with_one(self, count):
-        pvals = np.array([[1.0/count for _ in range(count)]], dtype=np.float32)
-        rng = RandomStreams()
-        arr = rng.multinomial(n=1, pvals=pvals, dtype='float32')[0]
-        return arr
+        return one_one_in_array(count=count)
 
     def _gen_local_drops(self, count, p):
         arr = self.random_arr(count, p)
@@ -99,9 +119,7 @@ class JoinLayerGen:
 
     def _build_global_path_arr(self):
         # The path the block will take when using global droppath
-        pvals = np.array([[1.0/self.width for _ in range(self.width)]], dtype=np.float32)
-        rng = RandomStreams(seed=self.path_seed)
-        return rng.multinomial(n=1, pvals=pvals, dtype='float32')[0]
+        return one_one_in_array(count=self.width)
 
     def _build_global_switch(self):
         # A random tensor that will signal if the batch should
