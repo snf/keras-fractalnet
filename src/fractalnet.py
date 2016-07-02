@@ -94,7 +94,7 @@ class JoinLayer(Layer):
 
     def call(self, inputs, mask=None):
         print("call")
-        print K.shape(inputs[0])
+        print(K.shape(inputs[0]))
         output = K.in_train_phase(self._drop_path(inputs), self.ave(inputs))
         return output
 
@@ -131,7 +131,7 @@ class JoinLayerGen:
         return JoinLayer(drop_p=drop_p, is_global=global_switch, global_path=global_path)
 
 def fractal_conv(prev, filter, dropout=None):
-    print prev
+    print(prev)
     conv = prev
     conv = Convolution2D(filter, 3, 3, init='glorot_normal', border_mode='same')(conv)
     conv = BatchNormalization()(conv)
