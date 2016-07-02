@@ -115,6 +115,8 @@ class JoinLayerGen:
         self.width = width
         self.switch_seed = np.random.randint(1, 10e6)
         self.path_seed = np.random.randint(1, 10e6)
+        self.path_array = self._build_global_path_arr()
+        self.is_global = self._build_global_switch()
 
     def _build_global_path_arr(self):
         # The path the block will take when using global droppath
@@ -126,8 +128,8 @@ class JoinLayerGen:
         return K.equal(K.random_binomial((), p=self.global_p, seed=self.switch_seed), 1.)
 
     def get_join_layer(self, drop_p):
-        global_switch = self._build_global_switch()
-        global_path = self._build_global_path_arr()
+        global_switch = self.is_global
+        global_path = self.path_array
         return JoinLayer(drop_p=drop_p, is_global=global_switch, global_path=global_path)
 
 def fractal_conv(prev, filter, dropout=None):
