@@ -118,7 +118,7 @@ class JoinLayerGen:
 
     def _build_global_path_arr(self):
         # The path the block will take when using global droppath
-        return one_one_in_array(count=self.width)
+        return one_one_in_array(seed=self.path_seed, count=self.width)
 
     def _build_global_switch(self):
         # A random tensor that will signal if the batch should
