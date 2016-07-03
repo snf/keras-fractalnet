@@ -146,8 +146,7 @@ def fractal_merge(prev, drop_p):
     merge = JoinLayer(drop_p=drop_p)(prev)
     return merge
 
-def fractal_block_iter(z, c, filter, drop_p, global_p, dropout=None):
-    join_gen = JoinLayerGen(width=c, global_p=global_p)
+def fractal_block_iter(join_gen, z, c, filter, drop_p, global_p, dropout=None):
     columns = [[z] for _ in range(c)]
     for row in range(2**(c-1)):
         t_row = []
@@ -183,10 +182,12 @@ def fractal_rec(c):
 
 def fractal_iter(z, b, c, conv, drop_path, global_p=0.5, dropout=None):
     input = z
+    join_gen = JoinLayerGen(width=c, global_p=global_p)
     for i in range(b):
         filter = conv[i]
         dropout_i = dropout[i] if dropout else None
-        input = fractal_block_iter(z=input, c=c,
+        input = fractal_block_iter(join_gen=join_gen,
+                                   z=input, c=c,
                                    filter=filter,
                                    drop_p=drop_path,
                                    global_p=global_p,
