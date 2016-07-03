@@ -42,6 +42,7 @@ class JoinLayer(Layer):
         self.p = 1. - drop_p
         self.is_global = is_global
         self.global_path = global_path
+        self.uses_learning_phase = True
         super(JoinLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
