@@ -12,16 +12,17 @@ from keras import backend as K
 
 if K._BACKEND == 'theano':
     from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
+if K._BACKEND == 'tensorflow':
+    import tensorflow as tf
 
 def theano_multinomial(n, pvals, seed):
     rng = RandomStreams(seed)
     return rng.multinomial(n=n, pvals=pvals, dtype='float32')
 
 def tensorflow_categorical(count, seed):
-    # XXX_ Appareantly categorical distribution will allow us to
-    # sample as we want but the version implementing it is not
-    # released yet.
-    raise Exception('Not implemented')
+    assert count > 0
+    arr = [1.] + [.0 for _ in range(count-1)]
+    return tf.random_shuffle(arr, seed)
 
 # Returns a random array [x0, x1, ...xn] where one is 1 and the others
 # are 0. Ex: [0, 0, 1, 0].
@@ -83,7 +84,7 @@ class JoinLayer(Layer):
         ave = K.switch(
             K.not_equal(sum, 0.),
             ave/sum,
-            0.)
+            K.variable(0.))
         return ave
 
     def ave(self, inputs):
