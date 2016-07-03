@@ -42,7 +42,7 @@ def learning_rate(epoch):
 
 def build_network():
     dropout = [0., 0.1, 0.2, 0.3, 0.4]
-    conv = [64, 128, 256, 512, 512]
+    conv = [(64, 3, 3), (128, 3, 3), (256, 3, 3), (512, 3, 3), (512, 2, 2)]
     input= Input(shape=(3, 32, 32))
     net = fractal_iter(
         z=input,

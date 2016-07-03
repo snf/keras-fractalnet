@@ -75,7 +75,7 @@ class JoinLayer(Layer):
             self._gen_global_path(count),
             self._gen_local_drops(count, self.p)
         )
-        ave = K.variable(0)
+        ave = K.variable(0.)
         for i in range(0, count):
             ave += inputs[i] * drops[i]
         sum = K.sum(drops)
@@ -84,7 +84,7 @@ class JoinLayer(Layer):
         ave = K.switch(
             K.not_equal(sum, 0.),
             ave/sum,
-            K.variable(0.))
+            ave)
         return ave
 
     def ave(self, inputs):
@@ -134,17 +134,17 @@ class JoinLayerGen:
         global_path = self.path_array
         return JoinLayer(drop_p=drop_p, is_global=global_switch, global_path=global_path)
 
-def fractal_conv(prev, filter, dropout=None):
+def fractal_conv(prev, filter, nb_row, nb_col, dropout=None):
     print(prev)
     conv = prev
-    conv = Convolution2D(filter, 3, 3, init='glorot_normal', border_mode='same')(conv)
+    conv = Convolution2D(filter, nb_row=nb_col, nb_col=nb_col, init='glorot_normal', border_mode='same')(conv)
     conv = BatchNormalization()(conv)
     conv = Activation('relu')(conv)
     if dropout:
         conv = Dropout(dropout)(conv)
     return conv
 
-def fractal_block_iter(join_gen, z, c, filter, drop_p, dropout=None):
+def fractal_block_iter(join_gen, z, c, filter, nb_col, nb_row, drop_p, dropout=None):
     columns = [[z] for _ in range(c)]
     for row in range(2**(c-1)):
         t_row = []
@@ -153,7 +153,7 @@ def fractal_block_iter(join_gen, z, c, filter, drop_p, dropout=None):
             # Add blocks
             if (row+1) % prop == 0:
                 t_col = columns[col]
-                t_col.append(fractal_conv(t_col[-1], filter, dropout=dropout))
+                t_col.append(fractal_conv(t_col[-1], filter=filter, nb_col=nb_col, nb_row=nb_row, dropout=dropout))
                 t_row.append(col)
         # Merge (if needed)
         if len(t_row) > 1:
@@ -167,14 +167,16 @@ def fractal_iter(z, b, c, conv, drop_path, global_p=0.5, dropout=None):
     input = z
     join_gen = JoinLayerGen(width=c, global_p=global_p)
     for i in range(b):
-        filter = conv[i]
+        (filter, nb_col, nb_row) = conv[i]
         dropout_i = dropout[i] if dropout else None
         input = fractal_block_iter(join_gen=join_gen,
                                    z=input, c=c,
                                    filter=filter,
+                                   nb_col=nb_col,
+                                   nb_row=nb_row,
                                    drop_p=drop_path,
                                    dropout=dropout_i)
-        input = MaxPooling2D()(input)
+        input = MaxPooling2D(pool_size=(2,2))(input)
     return input
 
 def fractal_iter_test(c, b):
