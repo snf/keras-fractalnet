@@ -142,11 +142,7 @@ def fractal_conv(prev, filter, dropout=None):
         conv = Dropout(dropout)(conv)
     return conv
 
-def fractal_merge(prev, drop_p):
-    merge = JoinLayer(drop_p=drop_p)(prev)
-    return merge
-
-def fractal_block_iter(join_gen, z, c, filter, drop_p, global_p, dropout=None):
+def fractal_block_iter(join_gen, z, c, filter, drop_p, dropout=None):
     columns = [[z] for _ in range(c)]
     for row in range(2**(c-1)):
         t_row = []
@@ -165,21 +161,6 @@ def fractal_block_iter(join_gen, z, c, filter, drop_p, global_p, dropout=None):
                 columns[i].append(merged)
     return columns[0][-1]
 
-def fc(z, c):
-    conv_layer = fractal_conv(z, 64)
-    if c == 1:
-        return conv_layer
-    else:
-        this_conv = fc(fc(z, c-1), c-1)
-        return Merge(mode='ave')([this_conv, conv_layer])
-
-def fractal_rec(c):
-    input = Input(shape=(3,64,64))
-    output= fc(input, c)
-    model = Model(input=input, output=output)
-    plot(model, to_file='model.png')
-    return model
-
 def fractal_iter(z, b, c, conv, drop_path, global_p=0.5, dropout=None):
     input = z
     join_gen = JoinLayerGen(width=c, global_p=global_p)
@@ -190,7 +171,6 @@ def fractal_iter(z, b, c, conv, drop_path, global_p=0.5, dropout=None):
                                    z=input, c=c,
                                    filter=filter,
                                    drop_p=drop_path,
-                                   global_p=global_p,
                                    dropout=dropout_i)
         input = MaxPooling2D()(input)
     return input
