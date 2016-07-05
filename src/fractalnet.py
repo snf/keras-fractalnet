@@ -48,7 +48,7 @@ class JoinLayer(Layer):
 
     def build(self, input_shape):
         #print("build")
-        pass
+        self.average_shape = list(input_shape[0])[1:]
 
     def random_arr(self, count, p):
         return K.random_binomial((count,), p=p)
@@ -75,7 +75,7 @@ class JoinLayer(Layer):
             self._gen_global_path(count),
             self._gen_local_drops(count, self.p)
         )
-        ave = K.variable(0.)
+        ave = K.zeros(shape=self.average_shape)
         for i in range(0, count):
             ave += inputs[i] * drops[i]
         sum = K.sum(drops)
