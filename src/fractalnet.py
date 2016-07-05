@@ -96,7 +96,6 @@ class JoinLayer(Layer):
 
     def call(self, inputs, mask=None):
         print("call")
-        print(K.shape(inputs[0]))
         output = K.in_train_phase(self._drop_path(inputs), self.ave(inputs))
         return output
 
