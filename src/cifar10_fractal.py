@@ -14,14 +14,13 @@ from keras.optimizers import SGD, RMSprop, Adam#, Nadam
 from keras.utils.visualize_util import plot
 from keras.utils import np_utils
 
-from fractalnet import fractal_iter
+from fractalnet import fractal_net
 
 NB_CLASSES = 10
 NB_EPOCHS = 400
 LEARN_START = 0.02
 BATCH_SIZE = 100
 MOMENTUM = 0.9
-INITIALIZE = 'xavier'
 
 (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 Y_train = np_utils.to_categorical(y_train, NB_CLASSES)
@@ -44,11 +43,9 @@ def build_network():
     dropout = [0., 0.1, 0.2, 0.3, 0.4]
     conv = [(64, 3, 3), (128, 3, 3), (256, 3, 3), (512, 3, 3), (512, 2, 2)]
     input= Input(shape=(3, 32, 32))
-    net = fractal_iter(
-        z=input,
+    output = fractal_net(
         c=3, b=5, conv=conv,
-        drop_path=0.15, dropout=dropout)
-    output = net
+        drop_path=0.15, dropout=dropout)(input)
     output = Flatten()(output)
     output = Dense(NB_CLASSES)(output)
     output = Activation('softmax')(output)
