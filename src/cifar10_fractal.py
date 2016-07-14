@@ -23,8 +23,16 @@ BATCH_SIZE = 100
 MOMENTUM = 0.9
 
 (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+
 Y_train = np_utils.to_categorical(y_train, NB_CLASSES)
 Y_test = np_utils.to_categorical(y_test, NB_CLASSES)
+
+X_train = X_train.astype('float32')
+X_test = X_test.astype('float32')
+
+X_train /= 255
+X_test /= 255
+
 print X_train.shape
 
 # Drop by 10 when we halve the number of remaining epochs (200, 300, 350, 375)
@@ -50,9 +58,10 @@ def build_network():
     output = Dense(NB_CLASSES)(output)
     output = Activation('softmax')(output)
     model = Model(input=input, output=output)
-    #optimizer = SGD(lr=LEARN_START, momentum=MOMENTUM)
+    optimizer = SGD(lr=LEARN_START, momentum=MOMENTUM)
+    #optimizer = SGD(lr=LEARN_START, momentum=MOMENTUM, nesterov=True)
     #optimizer = RMSprop(lr=LEARN_START)
-    optimizer = Adam()
+    #optimizer = Adam()
     #optimizer = Nadam()
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     plot(model, to_file='model.png')
