@@ -157,20 +157,28 @@ def fractal_conv(filter, nb_row, nb_col, dropout=None):
         return conv
     return f
 
+# XXX_ It's not clear when to apply Dropout, the paper cited
+# (arXiv:1511.07289) uses it in the last layer of each stack so I'm
+# implementing it here on the last layer of each column of each block.
 def fractal_block(join_gen, c, filter, nb_col, nb_row, drop_p, dropout=None):
     def f(z):
         columns = [[z] for _ in range(c)]
+        last_row = 2**(c-1) - 1
         for row in range(2**(c-1)):
             t_row = []
             for col in range(c):
                 prop = 2**(col)
                 # Add blocks
                 if (row+1) % prop == 0:
+                    if row == last_row:
+                        apply_dropout = dropout
+                    else:
+                        apply_dropout = None
                     t_col = columns[col]
                     t_col.append(fractal_conv(filter=filter,
                                               nb_col=nb_col,
                                               nb_row=nb_row,
-                                              dropout=dropout)(t_col[-1]))
+                                              dropout=apply_dropout)(t_col[-1]))
                     t_row.append(col)
             # Merge (if needed)
             if len(t_row) > 1:

@@ -64,7 +64,7 @@ def build_network():
     #optimizer = Adam()
     #optimizer = Nadam()
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
-    plot(model, to_file='model.png')
+    plot(model, to_file='model.png', show_shapes=True)
     return model
 
 def train_network(net):
