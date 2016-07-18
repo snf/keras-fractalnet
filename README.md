@@ -13,14 +13,17 @@ This results are from the experiments with the code published here. The authors 
 
 Test error (%)
 
-Method | C10
------- | ---
-ResNet (reported by [1]) | 13.63
-ResNet Stocatic Depth (reported by [1]) | 11.66
-FractalNet (paper)                         | 10.18
-FractalNet+dropout/drop-path (paper)       | 7.33
-FractalNet+dropout/drop-path (this w/Adam) | 8.73
-FractalNet+dropout/drop-path (this w/SGD)  | 9.80
+Method | C10 | C100
+------ | --- | ----
+ResNet (reported by [1]) | 13.63 | 44.76
+ResNet Stocatic Depth (reported by [1]) | 11.66 | 37.80
+FractalNet (paper)                         | 10.18 | 35.34
+FractalNet+dropout/drop-path (paper)       | 7.33 | 28.20
+FractalNet+dropout/drop-path (this w/Adam) | 8.73 | N/A
+FractalNet+dropout/drop-path (this w/SGD)  | 9.80 | 34.99
+FractalNet+dropout/drop-path/deepest-column (paper) | 7.27 | 29.05
+FractalNet+dropout/drop-path/deepest-column (this w/Adam) | N/A | N/A
+FractalNet+dropout/drop-path/deepest-column (this w/SGD) | N/A | N/A
 
 [1] G. Huang, Y. Sun, Z. Liu, D. Sedra, and K. Weinberger.  Deep networks with stochastic depth. arXiv preprint arXiv:1603.09382, 2016.
 
@@ -34,6 +37,12 @@ Training as reported by the paper with SGD for 400 epochs starting with 0.02 lea
 Training with Adam with default parameters for 400 epochs.
 
 ![](https://raw.githubusercontent.com/snf/keras-fractalnet/master/doc/c10_loss_train_adam.png)
+
+### CIFAR-100
+
+Trained with SGD (as with CIFAR-10):
+
+![](https://raw.githubusercontent.com/snf/keras-fractalnet/master/doc/c100_loss_train_sgd.png)
 
 ## Paper
 

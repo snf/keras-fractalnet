@@ -2,7 +2,7 @@ from keras.callbacks import (
     LearningRateScheduler,
     ModelCheckpoint
 )
-from keras.datasets import cifar10
+from keras.datasets import cifar100
 from keras.layers import (
     Activation,
     Input,
@@ -16,13 +16,13 @@ from keras.utils import np_utils
 
 from fractalnet import fractal_net
 
-NB_CLASSES = 10
+NB_CLASSES = 100
 NB_EPOCHS = 400
 LEARN_START = 0.02
 BATCH_SIZE = 100
 MOMENTUM = 0.9
 
-(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+(X_train, y_train), (X_test, y_test) = cifar100.load_data()
 
 Y_train = np_utils.to_categorical(y_train, NB_CLASSES)
 Y_test = np_utils.to_categorical(y_test, NB_CLASSES)
@@ -59,12 +59,11 @@ def build_network():
     output = Activation('softmax')(output)
     model = Model(input=input, output=output)
     optimizer = SGD(lr=LEARN_START, momentum=MOMENTUM)
-    #optimizer = SGD(lr=LEARN_START, momentum=MOMENTUM, nesterov=True)
     #optimizer = RMSprop(lr=LEARN_START)
     #optimizer = Adam()
     #optimizer = Nadam()
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
-    plot(model, to_file='model.png', show_shapes=True)
+    plot(model, to_file='model.png')
     return model
 
 def train_network(net):
