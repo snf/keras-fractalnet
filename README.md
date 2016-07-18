@@ -15,13 +15,14 @@ Test error (%)
 
 Method | C10
 ------ | ---
-ResNet | 13.63
-ResNet Stocatic Depth | 11.66
+ResNet (reported by [1]) | 13.63
+ResNet Stocatic Depth (reported by [1]) | 11.66
 FractalNet (paper)                         | 10.18
 FractalNet+dropout/drop-path (paper)       | 7.33
 FractalNet+dropout/drop-path (this w/Adam) | 8.73
 FractalNet+dropout/drop-path (this w/SGD)  | 9.80
 
+[1] G. Huang, Y. Sun, Z. Liu, D. Sedra, and K. Weinberger.  Deep networks with stochastic depth. arXiv preprint arXiv:1603.09382, 2016.
 
 ### CIFAR-10
 
