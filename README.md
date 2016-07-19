@@ -21,12 +21,12 @@ Method | C10 | C100
 ------ | --- | ----
 ResNet (reported by [1]) | 13.63 | 44.76
 ResNet Stocatic Depth (reported by [1]) | 11.66 | 37.80
-FractalNet (paper)                         | 10.18 | 35.34
-FractalNet+dropout/drop-path (paper w/SGD)       | 7.33 | 28.20
+FractalNet (paper w/SGD)                   | 10.18 | 35.34
+FractalNet+dropout/drop-path (paper w/SGD) | 7.33 | 28.20
 FractalNet+dropout/drop-path (this w/SGD)  | 11.16 | 34.99
 FractalNet+dropout/drop-path (this w/Adam) | 8.73 | N/A
 FractalNet+dropout/drop-path/deepest-column (paper w/SGD) | 7.27 | 29.05
-FractalNet+dropout/drop-path/deepest-column (this w/SGD) | 21.07 | N/A
+FractalNet+dropout/drop-path/deepest-column (this w/SGD)  | 21.07 | N/A
 FractalNet+dropout/drop-path/deepest-column (this w/Adam) | N/A | N/A
 
 [1] G. Huang, Y. Sun, Z. Liu, D. Sedra, and K. Weinberger.  Deep networks with stochastic depth. arXiv preprint arXiv:1603.09382, 2016.
