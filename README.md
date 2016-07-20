@@ -1,7 +1,4 @@
-# keras-fractalnet
-FractalNet implementation in Keras
-
-In CIFAR-10, it shows similar results as in the paper. Going to update this readme with actual numbers when I have more time.
+# FractalNet implementation in Keras
 
 ## Model
 
