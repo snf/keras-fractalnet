@@ -80,8 +80,8 @@ def train_network(net):
     net.fit(
         x=X_train, y=Y_train, batch_size=BATCH_SIZE,
         nb_epoch=NB_EPOCHS, validation_data=(X_test, Y_test),
-        callbacks=[learn, snapshot]
-        #callbacks=[snapshot]
+        #callbacks=[learn, snapshot]
+        callbacks=[snapshot]
     )
 
 def test_network(net, weights):
