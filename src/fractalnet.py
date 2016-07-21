@@ -221,6 +221,6 @@ def fractal_net(b, c, conv, drop_path, global_p=0.5, dropout=None, deepest=False
                                    nb_row=nb_row,
                                    drop_p=drop_path,
                                    dropout=dropout_i)(output)
-            output = MaxPooling2D(pool_size=(2,2))(output)
+            output = MaxPooling2D(pool_size=(2,2), strides=(2,2))(output)
         return output
     return f
