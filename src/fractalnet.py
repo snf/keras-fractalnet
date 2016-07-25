@@ -158,17 +158,18 @@ class JoinLayerGen:
 def fractal_conv(filter, nb_row, nb_col, dropout=None):
     def f(prev):
         conv = prev
-        conv = Convolution2D(filter, nb_row=nb_col, nb_col=nb_col, init='glorot_normal', border_mode='same')(conv)
-        conv = BatchNormalization(mode=0, axis=1)(conv)
-        conv = Activation('relu')(conv)
+        conv = Convolution2D(filter, nb_row=nb_col, nb_col=nb_col, init='he_normal', border_mode='same')(conv)
         if dropout:
             conv = Dropout(dropout)(conv)
+        conv = BatchNormalization(mode=0, axis=1)(conv)
+        conv = Activation('relu')(conv)
         return conv
     return f
 
 # XXX_ It's not clear when to apply Dropout, the paper cited
-# (arXiv:1511.07289) uses it in the last layer of each stack so I'm
-# implementing it here on the last layer of each column of each block.
+# (arXiv:1511.07289) uses it in the last layer of each stack but in
+# the code gustav published it is in each convolution block so I'm
+# copying it.
 def fractal_block(join_gen, c, filter, nb_col, nb_row, drop_p, dropout=None):
     def f(z):
         columns = [[z] for _ in range(c)]
@@ -179,15 +180,11 @@ def fractal_block(join_gen, c, filter, nb_col, nb_row, drop_p, dropout=None):
                 prop = 2**(col)
                 # Add blocks
                 if (row+1) % prop == 0:
-                    if row == last_row:
-                        apply_dropout = dropout
-                    else:
-                        apply_dropout = None
                     t_col = columns[col]
                     t_col.append(fractal_conv(filter=filter,
                                               nb_col=nb_col,
                                               nb_row=nb_row,
-                                              dropout=apply_dropout)(t_col[-1]))
+                                              dropout=dropout)(t_col[-1]))
                     t_row.append(col)
             # Merge (if needed)
             if len(t_row) > 1:
