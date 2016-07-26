@@ -98,6 +98,9 @@ def main():
                         action='store_true')
     parser.add_argument('--test-all', nargs=1,
                         help='Test all the weights from a folder')
+    parser.add_argument('--summary',
+                        help='Print a summary of the network and exit',
+                        action='store_true')
     args = parser.parse_args()
     net = build_network(deepest=args.deepest)
     if args.load:
@@ -107,6 +110,8 @@ def main():
         folder = args.test_all[0]
         for weights in glob.glob(os.path.join(folder, 'weigh*')):
             test_network(net, weights)
+    elif args.summary:
+        net.summary()
     else:
         train_network(net)
 
