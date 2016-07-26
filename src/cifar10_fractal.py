@@ -59,13 +59,13 @@ def build_network(deepest=False):
         drop_path=0.15, dropout=dropout,
         deepest=deepest)(input)
     output = Flatten()(output)
-    output = Dense(NB_CLASSES)(output)
+    output = Dense(NB_CLASSES, init='he_normal')(output)
     output = Activation('softmax')(output)
     model = Model(input=input, output=output)
     #optimizer = SGD(lr=LEARN_START, momentum=MOMENTUM)
     #optimizer = SGD(lr=LEARN_START, momentum=MOMENTUM, nesterov=True)
-    #optimizer = Adam()
-    optimizer = Nadam()
+    optimizer = Adam()
+    #optimizer = Nadam()
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     plot(model, to_file='model.png', show_shapes=True)
     return model
