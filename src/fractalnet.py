@@ -161,7 +161,7 @@ def fractal_conv(filter, nb_row, nb_col, dropout=None):
         conv = Convolution2D(filter, nb_row=nb_col, nb_col=nb_col, init='he_normal', border_mode='same')(conv)
         if dropout:
             conv = Dropout(dropout)(conv)
-        conv = BatchNormalization(mode=0, axis=1)(conv)
+        conv = BatchNormalization(mode=0, axis=1 if K._BACKEND == 'theano' else -1)(conv)
         conv = Activation('relu')(conv)
         return conv
     return f
