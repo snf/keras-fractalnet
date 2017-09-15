@@ -16,6 +16,7 @@ from keras.models import Model
 from keras.optimizers import SGD, RMSprop, Adam, Nadam
 from keras.utils.visualize_util import plot
 from keras.utils import np_utils
+from keras import backend as K
 
 from fractalnet import fractal_net
 
@@ -53,7 +54,7 @@ def learning_rate(epoch):
 def build_network(deepest=False):
     dropout = [0., 0.1, 0.2, 0.3, 0.4]
     conv = [(64, 3, 3), (128, 3, 3), (256, 3, 3), (512, 3, 3), (512, 2, 2)]
-    input= Input(shape=(3, 32, 32))
+    input= Input(shape=(3, 32, 32) if K._BACKEND == 'theano' else (32, 32,3))
     output = fractal_net(
         c=3, b=5, conv=conv,
         drop_path=0.15, dropout=dropout,
